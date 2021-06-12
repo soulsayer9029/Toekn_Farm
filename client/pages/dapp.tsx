@@ -4,12 +4,23 @@ import Head from 'next';
 import Web3Container from '../lib/Web3Container'
 import 'bootstrap/dist/css/bootstrap.css'
 
-
-class Dapp extends React.Component {
+interface IProps{
+  web3:any,
+  accounts: any[],
+  daiToken:any,
+  dappToken:any,
+  tokenFarm:any,
+  daiTokenBalance:string,
+  dappTokenBalance:string,
+  stakingBalance:string,
+}
+class Dapp extends React.Component<IProps> {
   state = {
     daiTokenBalance:this.props.daiTokenBalance,
     dappTokenBalance:this.props.dappTokenBalance,
-    stakingBalance:this.props.stakingBalance}
+    stakingBalance:this.props.stakingBalance,
+    amount:'0'
+  }
 
   // storeValue = async () => {
   //   const { accounts, contract } = this.props
@@ -30,14 +41,14 @@ class Dapp extends React.Component {
   // };
   stakeTokens=(async()=>{
     const {accounts,daiToken,tokenFarm,dappToken}=this.props
-    const amount=(document.querySelector('#amount').value);
+    const {amount}=this.state;
     if(Number(amount)<0){
       alert("You must enter a valid amount")
       return
     }
     try{
-      daiToken.methods.approve(tokenFarm._address,amount).send({from:accounts[0]}).on('transactionHash',(hash)=>{
-        tokenFarm.methods.stakeTokens(amount).send({from:accounts[0]}).on('transactionHash',(hash)=>{
+      daiToken.methods.approve(tokenFarm._address,(amount)).send({from:accounts[0]}).on('transactionHash',()=>{
+        tokenFarm.methods.stakeTokens(amount).send({from:accounts[0]}).on('transactionHash',(hash:any)=>{
           console.log(hash)
         })
       })
@@ -59,7 +70,7 @@ class Dapp extends React.Component {
   unstakeTokens=(async()=>{
     const {accounts,daiToken,tokenFarm,dappToken}=this.props
     try{
-      tokenFarm.methods.unstakeTokens().send({ from: accounts[0] }).on('transactionHash', (hash) => {
+      tokenFarm.methods.unstakeTokens().send({ from: accounts[0] }).on('transactionHash', (hash:any) => {
         console.log(hash)
       })
       let daiTokenBalance= await daiToken.methods.balanceOf(accounts[0]).call();
@@ -78,14 +89,14 @@ class Dapp extends React.Component {
   })
 
   render () {
-    const {daiTokenBalance,dappTokenBalance,stakingBalance } = this.state
+    const {daiTokenBalance,dappTokenBalance,stakingBalance,amount } = this.state
     return (
       
       <div className="container">
         
         <h1>Token Farm</h1>
         <div className="col-md-6">
-        <input className="form-control m-2 p-2 " type="text" placeholder="Enter number of Dai to stake" id="amount"></input>
+        <input className="form-control m-2 p-2 " type="text" placeholder="Enter number of Dai to stake" value={amount} onChange={(e)=>{this.setState({amount:e.target.value})}}></input>
         <div className="row d-flex">
         <button className="btn btn-primary m-2 col-md-4" onClick={this.stakeTokens}>Stake Tokens</button>
         <button className="btn btn-primary m-2 col-md-4 " onClick={this.unstakeTokens}>Get Tokens Back</button>
@@ -104,7 +115,7 @@ class Dapp extends React.Component {
 export default () => (
   <Web3Container
     renderLoading={() => <div>Loading Dapp Page...</div>}
-    render={({   web3, accounts, daiToken,dappToken,tokenFarm,daiTokenBalance,dappTokenBalance,stakingBalance  }) => (
+    render={({   web3, accounts, daiToken,dappToken,tokenFarm,daiTokenBalance,dappTokenBalance,stakingBalance  }:{   web3:any, accounts:any[], daiToken:any,dappToken:any,tokenFarm:any,daiTokenBalance:string,dappTokenBalance:string,stakingBalance:string  }) => (
       <Dapp accounts={accounts} daiToken={daiToken} dappToken={dappToken} tokenFarm={tokenFarm} daiTokenBalance={daiTokenBalance} dappTokenBalance={dappTokenBalance} stakingBalance={stakingBalance }  web3={web3} />
     )}
   />

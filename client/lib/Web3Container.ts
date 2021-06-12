@@ -1,14 +1,30 @@
-import React from 'react'
+import React,{ReactNode} from 'react'
 import getWeb3 from './getWeb3'
 import getContract from './getContract'
 import daiContractDefinition from '../../build/contracts/DaiToken.json'
 import dappContractDefinition from '../../build/contracts/DappToken.json'
 import tokenFarmContractDefinition from '../../build/contracts/TokenFarm.json'
+import Web3 from 'web3'
+interface IProps {
+  render: any;
+  renderLoading: () => ReactNode;
+}
+interface Istate{
+  web3:any,
+  accounts: any[],
+  daiToken:object,
+  dappToken:object,
+  tokenFarm:object,
+  daiTokenBalance:string,
+  dappTokenBalance:string,
+  stakingBalance:string, 
 
-export default class Web3Container extends React.Component {
-  state = { 
+
+}
+export default class Web3Container extends React.Component<IProps,Istate> {
+  state:Istate = { 
       web3: null,
-      accounts: null,
+      accounts: [],
       daiToken:{},
       dappToken:{},
       tokenFarm:{},
@@ -19,7 +35,7 @@ export default class Web3Container extends React.Component {
 
   async componentDidMount () {
     try {
-      const web3 = await getWeb3()
+      const web3:any = await getWeb3()
       
       const accounts = await web3.eth.getAccounts()
       console.log(accounts)

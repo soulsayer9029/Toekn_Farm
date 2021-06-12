@@ -1,7 +1,8 @@
 import Web3 from 'web3'
-
-const resolveWeb3 = (resolve) => {
-  let { web3 } = window
+declare let window: any;
+const resolveWeb3 = (resolve:any) => {
+  
+  let web3 = window.web3
   const alreadyInjected = typeof web3 !== 'undefined' // i.e. Mist/Metamask
   const localProvider = `http://localhost:7545`
 

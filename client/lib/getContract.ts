@@ -1,4 +1,6 @@
-const getContractInstance = async (web3, contractDefinition) => {
+import Web3 from "web3"
+
+const getContractInstance = async (web3:any, contractDefinition:any) => {
   // get network ID and the deployed address
   const networkId = await web3.eth.net.getId()
   const deployedAddress = contractDefinition.networks[networkId].address
